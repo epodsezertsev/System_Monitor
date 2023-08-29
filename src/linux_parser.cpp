@@ -5,6 +5,7 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
+#include <iomanip>
 
 #include "linux_parser.h"
 
@@ -109,7 +110,7 @@ long LinuxParser::Jiffies() {
   return jiffies;
 }
 
-// TODO: Read and return the number of active jiffies for a PID
+// DONE: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::ActiveJiffies(int pid) {
   string line, strpid, value;
@@ -124,10 +125,10 @@ long LinuxParser::ActiveJiffies(int pid) {
       linestream >> value;
       Stat.push_back(value);
     }
-    utime = std::stof(Stat[13]);
-    stime = std::stof(Stat[14]);
-    cutime = std::stof(Stat[15]);
-    cstime = std::stof(Stat[16]);
+    utime = std::stol(Stat[13]);
+    stime = std::stol(Stat[14]);
+    cutime = std::stol(Stat[15]);
+    cstime = std::stol(Stat[16]);
     total = (utime + stime + cutime + cstime);
     return total;
   }
@@ -213,8 +214,8 @@ string LinuxParser::Command(int pid) {
 // DONE: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Ram(int pid) {
-  string line, key, value, strpid, mb{"0"};
-  int megabytes{0}, kilobytes{0};
+  string line, key, value, strpid, mb{"0.00"};
+  float megabytes{0}, kilobytes{0};
   strpid = to_string(pid);
   std::ifstream stream(kProcDirectory + strpid + kStatusFilename);
   if (stream.is_open()) {
@@ -224,7 +225,9 @@ string LinuxParser::Ram(int pid) {
       if (key == "VmSize:") {
         kilobytes = stof(value);
         megabytes = kilobytes/1000;
-        mb = std::to_string(megabytes);
+        std::stringstream stream;
+        stream <<std::fixed << std::setprecision(2) <<megabytes;
+        mb = stream.str();
         return mb;
       } 
     }
@@ -282,7 +285,7 @@ long LinuxParser::UpTime(int pid) {
       Stat.push_back(value);
     }
     start_time = std::stol(Stat[21]);
-    uptime = LinuxParser::UpTime() - (start_time/sysconf(_SC_CLK_TCK));
+    uptime = LinuxParser::UpTime() - (start_time / sysconf(_SC_CLK_TCK));
     return uptime;
   }
 }

@@ -21,7 +21,7 @@ class Process {
  private:
   int pid_;
   float cpu_utilization_{0.0};
-  int ram_;
+  float ram_ {0.0};
 };
 
 #endif
