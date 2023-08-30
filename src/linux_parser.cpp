@@ -9,7 +9,6 @@
 
 #include "linux_parser.h"
 
-
 using std::stof;
 using std::string;
 using std::to_string;
@@ -18,7 +17,7 @@ using std::vector;
 string LinuxParser::OperatingSystem() {
   string line;
   string key;
-  string value;
+  string value { "No OS Found" };
   std::ifstream filestream(kOSPath);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
@@ -34,7 +33,7 @@ string LinuxParser::OperatingSystem() {
       }
     } 
     filestream.close();
-  } else { return "Error in OS Path"; }
+  } return "Error in OS Path";
 }
 
 string LinuxParser::Kernel() {
@@ -157,8 +156,8 @@ vector<string> LinuxParser::CpuUtilization() {
         utilization.push_back(value);
       } 
     stream.close();
-    return utilization;
   }
+  return utilization;
 }
 
 int LinuxParser::TotalProcesses() {
@@ -204,7 +203,8 @@ string LinuxParser::Command(int pid) {
       return line;
     }
     stream.close();
-  } else { return "Error in CMD line"; }
+  } 
+  return "Error in CMD line";
 }
 
 string LinuxParser::Ram(int pid) {
@@ -226,7 +226,8 @@ string LinuxParser::Ram(int pid) {
       } 
     }
     stream.close();
-  } else { return "Error in PID funct"; }
+  } 
+  return "Error in PID RAM funct";
 }
 
 string LinuxParser::Uid(int pid) {
@@ -242,7 +243,8 @@ string LinuxParser::Uid(int pid) {
       } 
     }
     stream.close();
-  } else { return "No UID found"; }
+  }
+  return "No UID found";
 }
 
 string LinuxParser::User(int pid) {
@@ -259,7 +261,8 @@ string LinuxParser::User(int pid) {
       }
     }
     PassStream.close();
-  } else { return "User not found"; }
+  }
+  return "User not found";
 }
 
 long LinuxParser::UpTime(int pid) {
