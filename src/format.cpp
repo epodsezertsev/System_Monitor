@@ -10,7 +10,11 @@ string Format::ElapsedTime(long seconds) {
   HH = seconds/3600;
   MM = (seconds - (HH * 3600))/60;
   SS = seconds % 60;
-  strHH = std::to_string(HH);
+  if (HH < 10) {
+    strHH = "0" + std::to_string(HH);
+  } else {
+    strHH = std::to_string(HH);
+  }
   if (MM < 10) {
     strMM = "0" + std::to_string(MM);
   } else {

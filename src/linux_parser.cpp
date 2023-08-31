@@ -70,7 +70,7 @@ vector<int> LinuxParser::Pids() {
 
 float LinuxParser::MemoryUtilization() {
   string line, key, value;
-  float MemTotal, MemFree;
+  float MemTotal, MemFree, MemBuffers, MemCache;
   std::ifstream stream(kProcDirectory + kMeminfoFilename);
   if (stream.is_open()) {
     while (std::getline(stream, line)) {
@@ -80,10 +80,15 @@ float LinuxParser::MemoryUtilization() {
         MemTotal = std::stof(value);
       } else if (key == "MemFree:") {
         MemFree = std::stof(value);
-      } 
+      } else if (key == "Buffers:") {
+        MemBuffers = std::stof(value);
+      } else if (key == "Cached:") {
+        MemCache = std::stof(value);
+      }
     } 
     stream.close();
-    return (MemTotal - MemFree)/MemTotal;
+    float use_mem = MemFree + MemBuffers + MemCache;
+    return (MemTotal - use_mem) / MemTotal;
   } else { return 0.0; }
 }
 
@@ -179,7 +184,7 @@ int LinuxParser::TotalProcesses() {
 
 int LinuxParser::RunningProcesses() {
   string line, key, value;
-  int processes;
+  int processes {0};
   std::ifstream stream(kProcDirectory + kStatFilename);
   if (stream.is_open()) {
     while (std::getline(stream, line)) {
@@ -217,12 +222,14 @@ string LinuxParser::Ram(int pid) {
       std::istringstream linestream(line);
       linestream >> key >> value;
       if (key == "VmSize:") {
-        kilobytes = stof(value);
-        megabytes = kilobytes/1000;
-        std::stringstream stream;
-        stream <<std::fixed << std::setprecision(2) <<megabytes;
-        mb = stream.str();
-        return mb;
+        if (value != ""){
+          kilobytes = stof(value);
+          megabytes = kilobytes/1000;
+          std::stringstream stream;
+          stream <<std::fixed << std::setprecision(2) <<megabytes;
+          mb = stream.str();
+          return mb;
+        } else { return "0.00"; }
       } 
     }
     stream.close();

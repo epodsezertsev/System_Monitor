@@ -21,10 +21,7 @@ float Process::CpuUtilization() {
 
 string Process::Command() { return LinuxParser::Command(pid_); }
 
-string Process::Ram() {
-  ram_ = std::stof(LinuxParser::Ram(pid_));
-  return LinuxParser::Ram(pid_);
-}
+string Process::Ram() { return LinuxParser::Ram(pid_); }
 
 string Process::User() { return LinuxParser::User(pid_); }
 
